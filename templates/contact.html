@@ -9,5 +9,11 @@
     
     {% include 'menu.html' %}
     <h1>Contact Page</h1>
+    <form method="post" action="/contactprocess">
+        {% csrf_token %}
+        No1 : <input type="number" min="1" max="100" name="txt1" required autocomplete="off"/>
+        No2 : <input type="number" name="txt2"  min="1" max="100" autocomplete="off"/>
+        <input type="submit"/>
+    </form>
 </body>
 </html>
