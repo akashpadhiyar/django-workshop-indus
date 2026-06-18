@@ -1,6 +1,18 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
+
 # Create your views here.
+def mailsenddemo(request):
+    subject = 'Welcome to Facebook '
+    message = ' You are Selected as CEO Position'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['akash@gmail.com',]
+    send_mail( subject, message, email_from, recipient_list )
+    return HttpResponse("Mail Sent")
+
+
 def homepage(request):
     return render(request,"home.html")
 def aboutpage(request):
@@ -54,6 +66,11 @@ def loginpage(request):
 def loginprocess(request):
     txt1 = request.POST['email']
     request.session['myemail'] = txt1
+    subject = 'Login Detected  '
+    message = ' Someone has access you website Name is ',txt1
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['akash@gmail.com',]
+    send_mail( subject, message, email_from, recipient_list )
     return redirect(dashboard)
 
 def dashboard(request):
