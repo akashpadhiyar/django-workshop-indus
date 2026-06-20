@@ -48,34 +48,23 @@
     </style>
 </head>
 <body>
-    <h1>Shop Static</h1>
+        {% include 'menu.html' %}
+
+    <h1>My Products</h1>
 
     <!--Content Start -->
     <div class="main">
+
+        {% for i in mydata %}
         <!--Product Start -->
             <div class="product">
-                <img src="{% static '1.png' %}"/>
-                <h3>Samsung</h3>
-                <p>₹999</p>
+                <img src="/media/{{i.image}}" width="200"/>
+                <h3>{{i.title}}</h3>
+                <p>₹{{i.price}}</p>
                 <input type="button" class="btn" value="Buy Now"/>
             </div>
         <!--Product End-->
-        <!--Product Start -->
-            <div class="product">
-                <img src="{% static '2.jpeg' %}"/>
-                <h3>Samsung</h3>
-                <p>₹999</p>
-                <input type="button" class="btn" value="Buy Now"/>
-            </div>
-        <!--Product End-->
-        <!--Product Start -->
-            <div class="product">
-                <img src="{% static '3.jpeg' %}"/>
-                <h3>Samsung</h3>
-                <p>₹999</p>
-                <input type="button" class="btn" value="Buy Now"/>
-            </div>
-       
+            {% endfor %}
 
     </div>
     <!-- Content End -->

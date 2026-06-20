@@ -1,7 +1,47 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+
+
+from . models import Student,Product
+
+
+def addstudentform(request):
+    return render(request,'add-student.html')
+
+def addstudentformprocess(request):
+    txt1 = request.POST['txt1']
+    txt2 = request.POST['txt2']
+    txt3 = request.POST['txt3']
+    txt4 = request.POST['txt4']
+    Student.objects.create(name=txt1,mobile=txt2,email=txt3,address=txt4)
+    return HttpResponse("Thank you")
+
+
+def displayStudent(request):
+    mystudentlist = Student.objects.all()
+    return render(request,'display-student.html',{'mydata':mystudentlist})
+
+def displayProduct(request):
+    productList = Product.objects.all()
+    return render(request,'product.html',{'mydata':productList})
+
+def displayProductApi(request):
+    product_list = Product.objects.all().values('id', 'title', 'price','image','category','details')
+    
+    # Convert the QuerySet into a standard Python list
+    data = list(product_list)
+    
+    # safe=False is mandatory because data is a List [], not a Dict {}
+    return JsonResponse(data, safe=False)
+
+def deleteStudent(request,id):
+    Student.objects.get(id=id).delete()
+    return redirect(displayStudent)
 
 # Create your views here.
 def mailsenddemo(request):
@@ -81,3 +121,59 @@ def dashboard(request):
 def logout(request):
     del request.session['myemail']
     return redirect(loginpage)
+
+
+
+
+def user_register_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect('register')
+
+        User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        messages.success(request, "Registration Successful")
+        return redirect('login')
+
+    return render(request, 'user_register.html')
+
+
+def user_login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, "Invalid Username or Password")
+
+    return render(request, 'user_login.html')
+
+
+def user_home_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    return render(request, 'user_home.html')
+
+
+def user_logout_view(request):
+    logout(request)
+    return redirect('login')
